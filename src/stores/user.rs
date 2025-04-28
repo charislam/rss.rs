@@ -20,27 +20,26 @@ pub(crate) struct User {
     pub(crate) email: String,
 }
 
-impl From<Session> for UserStoreData {
-    fn from(session: Session) -> Self {
+impl UserStore {
+    pub(crate) fn new_empty() -> Self {
+        Self { data: None }
+    }
+
+    pub(crate) fn new_user(user: User, credentials: Credentials) -> Self {
         Self {
-            user: User {
-                username: session.user.user_metadata.name,
-                email: session.user.email,
-            },
-            credentials: Credentials::new(session.access_token, session.refresh_token)
+            data: Some(UserStoreData {
+                user,
+                credentials,
+            }),
         }
     }
 }
 
-impl From<Option<Session>> for UserStore {
-    fn from(session: Option<Session>) -> Self {
-        match session {
-            Some(session) => Self {
-                data: Some(UserStoreData::from(session))
-            },
-            None => Self {
-                data: None
-            }
+impl From<Session> for User {
+    fn from(session: Session) -> Self {
+        Self {
+            username: session.user.user_metadata.name,
+            email: session.user.email,
         }
     }
 }

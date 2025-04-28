@@ -2,6 +2,8 @@ use supabase_auth::models::{AuthClient as AuthClientPrimitive, Session};
 
 use crate::utils::storage::get_local_storage_key;
 
+use super::credentials::Credentials;
+
 const SUPABASE_URL: &'static str = "";
 
 // !!! IMPORTANT !!!
@@ -32,5 +34,11 @@ impl AuthClient {
 
     pub(crate) fn get_stored_session(&self) -> Option<Session> {
         get_local_storage_key("supabase.auth.token")
+    }
+
+    pub(crate) async fn refresh_session(&self, credentials: Credentials) -> anyhow::Result<Session> {
+        self.inner.exchange_token_for_session(credentials.refresh_token()).await.map_err(|e| {
+            anyhow::anyhow!("Failed to refresh session: {}", e)
+        })
     }
 }
