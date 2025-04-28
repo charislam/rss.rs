@@ -1,5 +1,6 @@
 use leptos::prelude::*;
 
+#[component]
 pub(crate) fn AuthPage() -> impl IntoView {
     view! {
         <div>

@@ -1,12 +1,10 @@
 use reactive_stores::Store;
 use supabase_auth::models::Session;
 
-use crate::auth::client::AuthClient;
 use crate::auth::credentials::Credentials;
 
 #[derive(Clone, Debug, Store)]
 pub(crate) struct UserStore {
-    client: AuthClient,
     pub(crate) data: Option<UserStoreData>,
 }
 
@@ -22,17 +20,6 @@ pub(crate) struct User {
     pub(crate) email: String,
 }
 
-impl UserStore {
-    pub(crate) fn new() -> Self {
-        let client = AuthClient::new();
-        let data = AuthClient::get_stored_session().map(UserStoreData::from);
-        Self {
-            client,
-            data
-        }
-    }
-}
-
 impl From<Session> for UserStoreData {
     fn from(session: Session) -> Self {
         Self {
@@ -41,6 +28,19 @@ impl From<Session> for UserStoreData {
                 email: session.user.email,
             },
             credentials: Credentials::new(session.access_token, session.refresh_token)
+        }
+    }
+}
+
+impl From<Option<Session>> for UserStore {
+    fn from(session: Option<Session>) -> Self {
+        match session {
+            Some(session) => Self {
+                data: Some(UserStoreData::from(session))
+            },
+            None => Self {
+                data: None
+            }
         }
     }
 }

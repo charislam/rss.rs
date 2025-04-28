@@ -30,7 +30,7 @@ impl AuthClient {
         }
     }
 
-    pub(crate) fn get_stored_session() -> Option<Session> {
+    pub(crate) fn get_stored_session(&self) -> Option<Session> {
         get_local_storage_key("supabase.auth.token")
     }
 }
