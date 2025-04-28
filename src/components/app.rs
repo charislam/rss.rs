@@ -33,7 +33,7 @@ fn UnauthenticatedRedirector() -> impl IntoView {
     let user_store = expect_context::<Store<UserStore>>();
 
     Effect::new(move |_| {
-        let logged_in = user_store.data().read().is_some();
+        let logged_in = user_store.user().read().is_some();
 
         if !logged_in {
             let navigate = use_navigate();
